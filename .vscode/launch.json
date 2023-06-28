@@ -6,7 +6,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/nombre_programa",
+            "program": "${workspaceFolder}/SistemadeViajes",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
