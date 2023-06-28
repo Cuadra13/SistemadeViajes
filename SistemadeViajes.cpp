@@ -1,5 +1,19 @@
 #include <iostream>
-#include <sqlite3.h> // Asegúrate de tener la biblioteca SQLite instalada
+#include <sqlite3.h>
+#include <vector>
+#include <algorithm>
+
+struct Sucursal {
+    int id;
+    std::string nombre;
+    double distancia;
+};
+
+struct Colaborador {
+    int id;
+    std::string nombre;
+    std::vector<Sucursal> sucursales;
+};
 
 bool login(const std::string& username, const std::string& password) {
     sqlite3* db;
@@ -41,6 +55,38 @@ bool login(const std::string& username, const std::string& password) {
     return success;
 }
 
+// Función para verificar si una sucursal ya está asignada a un colaborador
+bool verificarSucursalAsignada(const Colaborador& colaborador, int idSucursal) {
+    auto it = std::find_if(colaborador.sucursales.begin(), colaborador.sucursales.end(), [idSucursal](const Sucursal& sucursal) {
+        return sucursal.id == idSucursal;
+    });
+
+    return (it != colaborador.sucursales.end());
+}
+
+// Función para asignar una sucursal a un colaborador
+void asignarSucursal(Colaborador& colaborador, const Sucursal& sucursal) {
+    if (!verificarSucursalAsignada(colaborador, sucursal.id)) {
+        colaborador.sucursales.push_back(sucursal);
+        std::cout << "Sucursal asignada correctamente." << std::endl;
+    } else {
+        std::cout << "La sucursal ya está asignada al colaborador." << std::endl;
+    }
+}
+
+// Función para registrar una nueva sucursal
+Sucursal registrarSucursal() {
+    Sucursal sucursal;
+    std::cout << "Ingrese el ID de la sucursal: ";
+    std::cin >> sucursal.id;
+    std::cout << "Ingrese el nombre de la sucursal: ";
+    std::cin >> sucursal.nombre;
+    std::cout << "Ingrese la distancia (en kilómetros) desde la sucursal hasta la casa del colaborador: ";
+    std::cin >> sucursal.distancia;
+
+    return sucursal;
+}
+
 int main() {
     std::string username, password;
 
@@ -53,10 +99,55 @@ int main() {
     // Autenticar al usuario
     if (login(username, password)) {
         std::cout << "Inicio de sesión exitoso. ¡Bienvenido, " << username << "!" << std::endl;
-        // Aquí puedes continuar con el flujo principal de tu aplicación después del inicio de sesión exitoso
+
+        std::vector<Colaborador> colaboradores;
+
+        // Menú principal
+        int opcion;
+        do {
+            std::cout << "\n--- Menú ---" << std::endl;
+            std::cout << "1. Asignar sucursal a colaborador" << std::endl;
+            std::cout << "2. Salir" << std::endl;
+            std::cout << "Ingrese una opción: ";
+            std::cin >> opcion;
+
+            switch (opcion) {
+                case 1: {
+                    int idColaborador;
+                    std::cout << "Ingrese el ID del colaborador: ";
+                    std::cin >> idColaborador;
+
+                    // Buscar al colaborador en la lista
+                    auto it = std::find_if(colaboradores.begin(), colaboradores.end(), [idColaborador](const Colaborador& colaborador) {
+                        return colaborador.id == idColaborador;
+                    });
+
+                    if (it != colaboradores.end()) {
+                        Sucursal nuevaSucursal = registrarSucursal();
+                        // Verificar validez de la distancia
+                        if (nuevaSucursal.distancia > 0 && nuevaSucursal.distancia <= 50) {
+                            asignarSucursal(*it, nuevaSucursal);
+                        } else {
+                            std::cout << "La distancia debe ser mayor que cero y no mayor que 50." << std::endl;
+                        }
+                    } else {
+                        std::cout << "No se encontró al colaborador con el ID especificado." << std::endl;
+                    }
+
+                    break;
+                }
+                case 2:
+                    std::cout << "¡Hasta luego!" << std::endl;
+                    break;
+                default:
+                    std::cout << "Opción inválida. Intente nuevamente." << std::endl;
+                    break;
+            }
+        } while (opcion != 2);
+
     } else {
         std::cout << "Credenciales inválidas. Inicio de sesión fallido." << std::endl;
-        // Aquí puedes manejar el caso de inicio de sesión fallido, como mostrar un mensaje de error o finalizar la aplicación
+        
     }
 
     return 0;
