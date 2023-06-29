@@ -103,47 +103,31 @@ int main() {
         std::vector<Colaborador> colaboradores;
 
         // Menú principal
-        int opcion;
-        do {
-            std::cout << "\n--- Menú ---" << std::endl;
-            std::cout << "1. Asignar sucursal a colaborador" << std::endl;
-            std::cout << "2. Salir" << std::endl;
-            std::cout << "Ingrese una opción: ";
-            std::cin >> opcion;
+int opcion;
+do {
+    std::cout << "\n--- Menú ---" << std::endl;
+    std::cout << "1. Asignar sucursal a colaborador" << std::endl;
+    std::cout << "2. Registrar viaje" << std::endl; // Opción agregada para registrar un viaje
+    std::cout << "3. Salir" << std::endl;
+    std::cout << "Ingrese una opción: ";
+    std::cin >> opcion;
 
-            switch (opcion) {
-                case 1: {
-                    int idColaborador;
-                    std::cout << "Ingrese el ID del colaborador: ";
-                    std::cin >> idColaborador;
+    switch (opcion) {
+        case 1:
+            // Lógica para asignar sucursal a colaborador
+            break;
+        case 2:
+            registrarViaje(colaboradores); // Llamar a la función para registrar un viaje
+            break;
+        case 3:
+            std::cout << "¡Hasta luego!" << std::endl;
+            break;
+        default:
+            std::cout << "Opción inválida. Intente nuevamente." << std::endl;
+            break;
+    }
+} while (opcion != 3);
 
-                    // Buscar al colaborador en la lista
-                    auto it = std::find_if(colaboradores.begin(), colaboradores.end(), [idColaborador](const Colaborador& colaborador) {
-                        return colaborador.id == idColaborador;
-                    });
-
-                    if (it != colaboradores.end()) {
-                        Sucursal nuevaSucursal = registrarSucursal();
-                        // Verificar validez de la distancia
-                        if (nuevaSucursal.distancia > 0 && nuevaSucursal.distancia <= 50) {
-                            asignarSucursal(*it, nuevaSucursal);
-                        } else {
-                            std::cout << "La distancia debe ser mayor que cero y no mayor que 50." << std::endl;
-                        }
-                    } else {
-                        std::cout << "No se encontró al colaborador con el ID especificado." << std::endl;
-                    }
-
-                    break;
-                }
-                case 2:
-                    std::cout << "¡Hasta luego!" << std::endl;
-                    break;
-                default:
-                    std::cout << "Opción inválida. Intente nuevamente." << std::endl;
-                    break;
-            }
-        } while (opcion != 2);
 
     } else {
         std::cout << "Credenciales inválidas. Inicio de sesión fallido." << std::endl;
