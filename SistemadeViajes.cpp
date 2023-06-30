@@ -13,6 +13,15 @@ struct Colaborador {
     int id;
     std::string nombre;
     std::vector<Sucursal> sucursales;
+    std::vector<Viaje> viajes;
+};
+
+
+struct Viaje {
+    Colaborador colaborador;
+    Sucursal sucursal;
+    std::string transportista;
+    double distanciaAcumulada;
 };
 
 bool login(const std::string& username, const std::string& password) {
@@ -55,6 +64,13 @@ bool login(const std::string& username, const std::string& password) {
     return success;
 }
 
+
+bool verificarPerfil(const std::string& username) {
+    // Aquí debo verificar el perfil del usuario en la base de datos
+    // Verificar el perfil del usuario
+    return true; // Devolver true si es un "Gerente de tienda", de lo contrario, devolver false
+}
+
 // Función para verificar si una sucursal ya está asignada a un colaborador
 bool verificarSucursalAsignada(const Colaborador& colaborador, int idSucursal) {
     auto it = std::find_if(colaborador.sucursales.begin(), colaborador.sucursales.end(), [idSucursal](const Sucursal& sucursal) {
@@ -85,6 +101,12 @@ Sucursal registrarSucursal() {
     std::cin >> sucursal.distancia;
 
     return sucursal;
+}
+
+
+bool verificarViajeDuplicado(const Colaborador& colaborador) {
+    // Verificar si el colaborador ya ha realizado un viaje en el día actual
+    return false; // Devolver true si ya ha realizado un viaje, de lo contrario, devolver false
 }
 
 int main() {
