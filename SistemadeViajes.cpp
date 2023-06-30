@@ -109,7 +109,77 @@ bool verificarViajeDuplicado(const Colaborador& colaborador) {
     return false; // Devolver true si ya ha realizado un viaje, de lo contrario, devolver false
 }
 
+void registrarViaje(const std::vector<Colaborador>& colaboradores) {
+    std::string username, password;
+    std::cout << "Ingrese el nombre de usuario: ";
+    std::cin >> username;
+    std::cout << "Ingrese la contraseña: ";
+    std::cin >> password;
 
+    if (login(username, password)) {
+        std::cout << "Inicio de sesión exitoso. ¡Bienvenido, " << username << "!" << std::endl;
+
+        if (verificarPerfil(username)) {
+            std::cout << "Registro de viaje" << std::endl;
+
+            int idSucursal;
+            std::cout << "Ingrese el ID de la sucursal: ";
+            std::cin >> idSucursal;
+
+            auto itSucursal = std::find_if(sucursales.begin(), sucursales.end(), [idSucursal](const Sucursal& sucursal) {
+                return sucursal.id == idSucursal;
+            });
+
+            if (itSucursal != sucursales.end()) {
+                std::cout << "Colaboradores asignados a la sucursal:" << std::endl;
+                for (const Colaborador& colaborador : colaboradores) {
+                    if (verificarSucursalAsignada(colaborador, idSucursal)) {
+                        std::cout << "ID: " << colaborador.id << " Nombre: " << colaborador.nombre << std::endl;
+                    }
+                }
+
+                int idColaborador;
+                std::cout << "Ingrese el ID del colaborador: ";
+                std::cin >> idColaborador;
+
+                auto itColaborador = std::find_if(colaboradores.begin(), colaboradores.end(), [idColaborador](const Colaborador& colaborador) {
+                    return colaborador.id == idColaborador;
+                });
+
+                if (itColaborador != colaboradores.end()) {
+                    if (!verificarViajeDuplicado(*itColaborador)) {
+                        Viaje viaje;
+                        viaje.colaborador = *itColaborador;
+                        viaje.sucursal = *itSucursal;
+
+                        std::cout << "Ingrese el nombre del transportista: ";
+                        std::cin >> viaje.transportista;
+
+                        std::cout << "Ingrese la distancia acumulada del viaje: ";
+                        std::cin >> viaje.distanciaAcumulada;
+
+                        if (viaje.distanciaAcumulada <= 100.0) {
+                            itColaborador->viajes.push_back(viaje);
+                            std::cout << "Viaje registrado correctamente." << std::endl;
+                        } else {
+                            std::cout << "La distancia acumulada del viaje no puede superar los 100 km." << std::endl;
+                        }
+                    } else {
+                        std::cout << "El colaborador ya ha realizado un viaje en el día actual." << std::endl;
+                    }
+                } else {
+                    std::cout << "No se encontró al colaborador con el ID especificado." << std::endl;
+                }
+            } else {
+                std::cout << "No se encontró la sucursal con el ID especificado." << std::endl;
+            }
+        } else {
+            std::cout << "Acceso denegado. No tienes permisos de gerente de tienda." << std::endl;
+        }
+    } else {
+        std::cout << "Credenciales inválidas. Inicio de sesión fallido." << std::endl;
+    }
+}
 
 
 int main() {
