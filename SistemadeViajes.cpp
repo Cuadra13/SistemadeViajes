@@ -109,8 +109,13 @@ bool verificarViajeDuplicado(const Colaborador& colaborador) {
     return false; // Devolver true si ya ha realizado un viaje, de lo contrario, devolver false
 }
 
+
+
+
 int main() {
     std::string username, password;
+
+    // Cargar las sucursales y colaboradores desde la base de datos y almacenarlos en los vectores sucursales y colaboradores
 
     // Solicitar las credenciales al usuario
     std::cout << "Ingrese el nombre de usuario: ";
