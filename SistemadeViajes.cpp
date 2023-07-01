@@ -24,6 +24,72 @@ struct Viaje {
     double distanciaAcumulada;
 };
 
+// Función para crear la base de datos y definir la estructura de tablas
+bool crearBaseDeDatos() {
+    sqlite3* db;
+    int rc = sqlite3_open("database.db", &db); // Abre la conexión con la base de datos
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error al abrir la base de datos: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+
+    // Definir la estructura de la tabla 'sucursales'
+    std::string createSucursalesTable = "CREATE TABLE IF NOT EXISTS sucursales ("
+                                        "id INTEGER PRIMARY KEY,"
+                                        "nombre TEXT NOT NULL,"
+                                        "distancia REAL NOT NULL"
+                                        ");";
+
+    rc = sqlite3_exec(db, createSucursalesTable.c_str(), nullptr, nullptr, nullptr);
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error al crear la tabla 'sucursales': " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return false;
+    }
+
+    // Definir la estructura de la tabla 'colaboradores'
+    std::string createColaboradoresTable = "CREATE TABLE IF NOT EXISTS colaboradores ("
+                                           "id INTEGER PRIMARY KEY,"
+                                           "nombre TEXT NOT NULL"
+                                           ");";
+
+    rc = sqlite3_exec(db, createColaboradoresTable.c_str(), nullptr, nullptr, nullptr);
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error al crear la tabla 'colaboradores': " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return false;
+    }
+
+    // Definir la estructura de la tabla 'viajes'
+    std::string createViajesTable = "CREATE TABLE IF NOT EXISTS viajes ("
+                                    "id INTEGER PRIMARY KEY,"
+                                    "colaborador_id INTEGER NOT NULL,"
+                                    "sucursal_id INTEGER NOT NULL,"
+                                    "transportista TEXT NOT NULL,"
+                                    "distancia_acumulada REAL NOT NULL,"
+                                    "FOREIGN KEY (colaborador_id) REFERENCES colaboradores (id),"
+                                    "FOREIGN KEY (sucursal_id) REFERENCES sucursales (id)"
+                                    ");";
+
+    rc = sqlite3_exec(db, createViajesTable.c_str(), nullptr, nullptr, nullptr);
+
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error al crear la tabla 'viajes': " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return false;
+    }
+
+    // Cierra la conexión con la base de datos
+    sqlite3_close(db);
+
+    return true;
+}
+
+
+
 bool login(const std::string& username, const std::string& password) {
     sqlite3* db;
     int rc = sqlite3_open("database.db", &db); // Abre la conexión con la base de datos
@@ -184,6 +250,13 @@ void registrarViaje(const std::vector<Colaborador>& colaboradores) {
 
 int main() {
     std::string username, password;
+
+// Crea la base de datos y define la estructura de tablas al iniciar la aplicación
+    if (crearBaseDeDatos()) {
+        std::cout << "La base de datos y las tablas se crearon correctamente." << std::endl;
+    } else {
+        std::cout << "No se pudo crear la base de datos y las tablas." << std::endl;
+    }
 
     // Cargar las sucursales y colaboradores desde la base de datos y almacenarlos en los vectores sucursales y colaboradores
 
